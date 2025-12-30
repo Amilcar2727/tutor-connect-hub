@@ -57,6 +57,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "info-panel": {
+          DEFAULT: "hsl(var(--info-panel))",
+          foreground: "hsl(var(--info-panel-foreground))",
+        },
+        header: {
+          start: "hsl(var(--header-start))",
+          end: "hsl(var(--header-end))",
+        },
+      },
+      backgroundImage: {
+        "header-gradient": "linear-gradient(135deg, hsl(var(--header-start)), hsl(var(--header-end)))",
+        "info-gradient": "linear-gradient(135deg, hsl(var(--info-panel)), hsl(var(--info-panel) / 0.7))",
       },
       borderRadius: {
         lg: "var(--radius)",
