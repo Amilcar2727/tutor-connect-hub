@@ -14,7 +14,7 @@ interface UserBarProps {
   user: {
     nombre: string;
     correo: string;
-    rol: string;
+    codigo: string;
     foto?: string;
   };
 }
@@ -88,7 +88,7 @@ const UserBar = ({ user }: UserBarProps) => {
                   <p className="text-sm font-semibold text-foreground">
                     {user.nombre}
                   </p>
-                  <p className="text-xs text-accent font-medium">{user.rol}</p>
+                  <p className="text-xs text-accent font-medium">Cód. {user.codigo}</p>
                 </div>
                 <ChevronDown className="h-4 w-4 text-muted-foreground" />
               </button>
@@ -108,7 +108,7 @@ const UserBar = ({ user }: UserBarProps) => {
                         {user.nombre}
                       </p>
                       <p className="text-xs font-medium text-accent">
-                        {user.rol}
+                        Código: {user.codigo}
                       </p>
                     </div>
                   </div>

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import UserBar from "@/components/UserBar";
 import RolTabs, { RolType } from "@/components/RolTabs";
+import SubTabs, { SubTabType, subTabsByRole } from "@/components/SubTabs";
 import WelcomePanel from "@/components/WelcomePanel";
 import QuickAccessCards from "@/components/QuickAccessCards";
 
@@ -9,7 +10,6 @@ import QuickAccessCards from "@/components/QuickAccessCards";
 const mockUser = {
   nombre: "Juan Carlos Pérez Quispe",
   correo: "jcperez@unsaac.edu.pe",
-  rol: "Administrador",
   codigo: "184567",
   foto: undefined,
 };
@@ -19,9 +19,24 @@ const userRoles: RolType[] = ["administrador", "tutor", "verificador"];
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<RolType>("inicio");
+  const [activeSubTab, setActiveSubTab] = useState<SubTabType | null>(null);
+
+  // Set default sub-tab when role changes
+  useEffect(() => {
+    const subTabs = subTabsByRole[activeTab];
+    if (subTabs && subTabs.length > 0) {
+      setActiveSubTab(subTabs[0].id);
+    } else {
+      setActiveSubTab(null);
+    }
+  }, [activeTab]);
 
   const handleTabChange = (tab: RolType) => {
     setActiveTab(tab);
+  };
+
+  const handleSubTabChange = (subTab: SubTabType) => {
+    setActiveSubTab(subTab);
   };
 
   const getRolLabel = (tab: RolType): string => {
@@ -33,8 +48,32 @@ const Index = () => {
       case "verificador":
         return "Verificador";
       default:
-        return mockUser.rol;
+        return "Usuario";
     }
+  };
+
+  const getSubTabLabel = (): string => {
+    const subTabs = subTabsByRole[activeTab];
+    if (subTabs && activeSubTab) {
+      const found = subTabs.find((st) => st.id === activeSubTab);
+      return found ? found.label : "";
+    }
+    return "";
+  };
+
+  const renderSubTabContent = () => {
+    if (!activeSubTab) return null;
+
+    return (
+      <div className="bg-card rounded-lg border border-border p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-2">
+          {getSubTabLabel()}
+        </h3>
+        <p className="text-muted-foreground">
+          Contenido por implementar para la sección "{getSubTabLabel()}".
+        </p>
+      </div>
+    );
   };
 
   const renderContent = () => {
@@ -69,14 +108,7 @@ const Index = () => {
                 rol: "Administrador",
               }}
             />
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                Panel de Administración
-              </h3>
-              <p className="text-muted-foreground">
-                Aquí se mostrarán las opciones de administración: Validar Usuarios, Asignaciones, Cronogramas, Reportes.
-              </p>
-            </div>
+            {renderSubTabContent()}
           </div>
         );
 
@@ -109,14 +141,7 @@ const Index = () => {
                 rol: "Verificador",
               }}
             />
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                Panel de Evaluación
-              </h3>
-              <p className="text-muted-foreground">
-                Aquí se mostrarán las opciones de verificación: Evaluar Sesiones, Reportes de Verificación.
-              </p>
-            </div>
+            {renderSubTabContent()}
           </div>
         );
 
@@ -133,6 +158,11 @@ const Index = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         userRoles={userRoles}
+      />
+      <SubTabs
+        activeRole={activeTab}
+        activeSubTab={activeSubTab}
+        onSubTabChange={handleSubTabChange}
       />
       
       <main className="container mx-auto px-6 py-8">
