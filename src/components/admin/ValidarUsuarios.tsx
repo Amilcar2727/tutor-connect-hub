@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -23,10 +22,13 @@ import {
   CheckCircle2,
   XCircle,
   Send,
-  Loader2,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+interface RoleDecision {
+  role: string;
+  approved: boolean | null;
+}
 
 interface PendingUser {
   id: string;
@@ -38,10 +40,42 @@ interface PendingUser {
   created_at: string;
 }
 
-interface RoleDecision {
-  role: string;
-  approved: boolean | null;
-}
+// Mock data para simular solicitudes pendientes
+const mockPendingUsers: PendingUser[] = [
+  {
+    id: "1",
+    first_name: "María Elena",
+    last_name: "Quispe Mamani",
+    email: "maria.quispe@unsaac.edu.pe",
+    roles: ["administrador", "tutor"],
+    roles_decisiones: [
+      { role: "administrador", approved: null },
+      { role: "tutor", approved: null },
+    ],
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "2",
+    first_name: "Carlos Alberto",
+    last_name: "Huanca Condori",
+    email: "carlos.huanca@unsaac.edu.pe",
+    roles: ["verificador"],
+    roles_decisiones: [{ role: "verificador", approved: null }],
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "3",
+    first_name: "Ana Lucía",
+    last_name: "Flores Gutierrez",
+    email: "ana.flores@unsaac.edu.pe",
+    roles: ["tutor", "verificador"],
+    roles_decisiones: [
+      { role: "tutor", approved: null },
+      { role: "verificador", approved: null },
+    ],
+    created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+  },
+];
 
 const roleLabels: Record<string, string> = {
   administrador: "Administrador",
@@ -56,42 +90,14 @@ const roleColors: Record<string, string> = {
 };
 
 const ValidarUsuarios = () => {
-  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [pendingUsers, setPendingUsers] = useState<PendingUser[]>(mockPendingUsers);
   const [selectedUser, setSelectedUser] = useState<PendingUser | null>(null);
   const [roleDecisions, setRoleDecisions] = useState<Record<string, boolean | null>>({});
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    fetchPendingUsers();
-  }, []);
-
-  const fetchPendingUsers = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("pending_users")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
-      setPendingUsers(data || []);
-    } catch (error) {
-      console.error("Error fetching pending users:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar las solicitudes pendientes.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const openDetails = (user: PendingUser) => {
     setSelectedUser(user);
-    // Initialize role decisions from existing decisions or set to null
     const decisions: Record<string, boolean | null> = {};
     user.roles.forEach((role) => {
       const existingDecision = user.roles_decisiones?.find((d) => d.role === role);
@@ -112,10 +118,9 @@ const ValidarUsuarios = () => {
     }));
   };
 
-  const handleSubmitDecisions = async () => {
+  const handleSubmitDecisions = () => {
     if (!selectedUser) return;
 
-    // Check if all roles have a decision
     const allDecided = selectedUser.roles.every(
       (role) => roleDecisions[role] !== null
     );
@@ -131,37 +136,32 @@ const ValidarUsuarios = () => {
 
     setSubmitting(true);
 
-    try {
-      const newDecisions = selectedUser.roles.map((role) => ({
-        role,
-        approved: roleDecisions[role],
-      }));
+    // Simular procesamiento
+    setTimeout(() => {
+      const updatedUsers = pendingUsers.map((user) => {
+        if (user.id === selectedUser.id) {
+          return {
+            ...user,
+            roles_decisiones: user.roles.map((role) => ({
+              role,
+              approved: roleDecisions[role],
+            })),
+          };
+        }
+        return user;
+      });
 
-      const { error } = await supabase
-        .from("pending_users")
-        .update({ roles_decisiones: newDecisions })
-        .eq("id", selectedUser.id);
-
-      if (error) throw error;
+      // Remover usuario de la lista (simulando que ya fue procesado)
+      setPendingUsers(updatedUsers.filter((u) => u.id !== selectedUser.id));
 
       toast({
         title: "Decisiones enviadas",
         description: "Las decisiones de roles han sido registradas correctamente.",
       });
 
-      // Refresh list
-      fetchPendingUsers();
       closeDetails();
-    } catch (error) {
-      console.error("Error submitting decisions:", error);
-      toast({
-        title: "Error",
-        description: "No se pudieron enviar las decisiones.",
-        variant: "destructive",
-      });
-    } finally {
       setSubmitting(false);
-    }
+    }, 800);
   };
 
   const formatDate = (dateString: string) => {
@@ -180,15 +180,6 @@ const ValidarUsuarios = () => {
       minute: "2-digit",
     });
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-muted-foreground">Cargando solicitudes...</span>
-      </div>
-    );
-  }
 
   if (pendingUsers.length === 0) {
     return (
@@ -416,10 +407,7 @@ const ValidarUsuarios = () => {
               disabled={submitting}
             >
               {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Enviando...
-                </>
+                "Enviando..."
               ) : (
                 <>
                   <Send className="h-4 w-4 mr-2" />
