@@ -6,6 +6,7 @@ import SubTabs, { SubTabType, subTabsByRole } from "@/components/SubTabs";
 import WelcomePanel from "@/components/WelcomePanel";
 import QuickAccessCards from "@/components/QuickAccessCards";
 import ValidarUsuarios from "@/components/admin/ValidarUsuarios";
+import TutorPanel from "@/components/tutor/TutorPanel";
 
 // Datos de ejemplo
 const mockUser = {
@@ -128,14 +129,7 @@ const Index = () => {
                 rol: "Tutor",
               }}
             />
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                Panel de Tutorías
-              </h3>
-              <p className="text-muted-foreground">
-                Aquí se mostrarán las opciones de tutoría: Registrar Sesiones, Mis Tutorados, Actividades.
-              </p>
-            </div>
+            <TutorPanel />
           </div>
         );
 
