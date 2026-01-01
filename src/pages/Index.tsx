@@ -5,6 +5,7 @@ import RolTabs, { RolType } from "@/components/RolTabs";
 import SubTabs, { SubTabType, subTabsByRole } from "@/components/SubTabs";
 import WelcomePanel from "@/components/WelcomePanel";
 import QuickAccessCards from "@/components/QuickAccessCards";
+import ValidarUsuarios from "@/components/admin/ValidarUsuarios";
 
 // Datos de ejemplo
 const mockUser = {
@@ -64,6 +65,12 @@ const Index = () => {
   const renderSubTabContent = () => {
     if (!activeSubTab) return null;
 
+    // Render specific content based on active sub-tab
+    if (activeTab === "administrador" && activeSubTab === "validar-usuarios") {
+      return <ValidarUsuarios />;
+    }
+
+    // Default placeholder for other sub-tabs
     return (
       <div className="bg-card rounded-lg border border-border p-6">
         <h3 className="text-lg font-semibold text-foreground mb-2">
