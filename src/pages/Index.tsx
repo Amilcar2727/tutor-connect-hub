@@ -7,6 +7,9 @@ import WelcomePanel from "@/components/WelcomePanel";
 import QuickAccessCards from "@/components/QuickAccessCards";
 import ValidarUsuarios from "@/components/admin/ValidarUsuarios";
 import TutorPanel from "@/components/tutor/TutorPanel";
+import TutoriasPorSemestre from "@/components/verificador/TutoriasPorSemestre";
+import TutoriasPorEstudiante from "@/components/verificador/TutoriasPorEstudiante";
+import TutoriasPorTutor from "@/components/verificador/TutoriasPorTutor";
 
 // Datos de ejemplo
 const mockUser = {
@@ -142,7 +145,9 @@ const Index = () => {
                 rol: "Verificador",
               }}
             />
-            {renderSubTabContent()}
+            {activeSubTab === "tutorias-semestre" && <TutoriasPorSemestre />}
+            {activeSubTab === "tutorias-estudiante" && <TutoriasPorEstudiante />}
+            {activeSubTab === "tutorias-tutor" && <TutoriasPorTutor />}
           </div>
         );
 
