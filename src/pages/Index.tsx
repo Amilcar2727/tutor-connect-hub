@@ -6,6 +6,7 @@ import SubTabs, { SubTabType, subTabsByRole } from "@/components/SubTabs";
 import WelcomePanel from "@/components/WelcomePanel";
 import QuickAccessCards from "@/components/QuickAccessCards";
 import ValidarUsuarios from "@/components/admin/ValidarUsuarios";
+import Seguridad from "@/components/admin/Seguridad";
 import TutorPanel from "@/components/tutor/TutorPanel";
 import TutoriasPorSemestre from "@/components/verificador/TutoriasPorSemestre";
 import TutoriasPorEstudiante from "@/components/verificador/TutoriasPorEstudiante";
@@ -70,8 +71,13 @@ const Index = () => {
     if (!activeSubTab) return null;
 
     // Render specific content based on active sub-tab
-    if (activeTab === "administrador" && activeSubTab === "validar-usuarios") {
-      return <ValidarUsuarios />;
+    if (activeTab === "administrador") {
+      if (activeSubTab === "validar-usuarios") {
+        return <ValidarUsuarios />;
+      }
+      if (activeSubTab === "seguridad") {
+        return <Seguridad />;
+      }
     }
 
     // Default placeholder for other sub-tabs

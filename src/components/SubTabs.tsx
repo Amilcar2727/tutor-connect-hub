@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { RolType } from "./RolTabs";
-import { Users, GitBranch, Calendar, FileText, BookMarked, GraduationCap, UserCheck } from "lucide-react";
+import { Users, GitBranch, Calendar, FileText, BookMarked, GraduationCap, UserCheck, ShieldCheck } from "lucide-react";
 
 export type SubTabType = string;
 
@@ -17,6 +17,7 @@ const subTabsByRole: Record<RolType, SubTabConfig[]> = {
     { id: "asignaciones", label: "Asignaciones", icon: GitBranch },
     { id: "cronogramas", label: "Cronogramas", icon: Calendar },
     { id: "reportes", label: "Reportes", icon: FileText },
+    { id: "seguridad", label: "Seguridad", icon: ShieldCheck },
   ],
   tutor: [],
   verificador: [
