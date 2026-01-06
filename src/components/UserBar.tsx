@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronDown, Settings, LogOut, Calendar, Clock } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ interface UserBarProps {
 }
 
 const UserBar = ({ user }: UserBarProps) => {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -52,6 +54,10 @@ const UserBar = ({ user }: UserBarProps) => {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const handleLogout = () => {
+    navigate("/");
   };
 
   return (
@@ -116,12 +122,18 @@ const UserBar = ({ user }: UserBarProps) => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem 
+                className="cursor-pointer"
+                onClick={() => navigate("/configuracion")}
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurar Información Personal</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
+              <DropdownMenuItem 
+                className="cursor-pointer text-destructive focus:text-destructive"
+                onClick={handleLogout}
+              >
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Cerrar Sesión</span>
               </DropdownMenuItem>
